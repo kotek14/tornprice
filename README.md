@@ -18,6 +18,14 @@ I dunno.
 `git clone https://github.com/kotek14/tornprice.git`
 
 ### How to run
+First edit the script itself and insert your API key to wherever it says "INSERT YOUR KEY HERE". Simple as that.
+
+After that you can run it and it will work unless
+
+A: Your key is wrong
+
+B: My code sucks
+
 `python tornprice`
 
 ### Why Linux only?
