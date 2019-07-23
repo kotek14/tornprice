@@ -2,7 +2,7 @@
 import requests
 import os
 
-api_key = "INSERT YOUR KEY HERE"
+api_key = "INSERT YOUR API KEY HERE"
 
 r = requests.get("https://api.torn.com/torn/?selections=items&key=" + api_key)
 data = r.json()
@@ -11,7 +11,7 @@ itemname = raw_input("Name? ")
 
 while itemid <= 981:
 	if data["items"][str(itemid)]["name"] == itemname:
-		priceresolve = 'curl -s https://api.torn.com/market/' + str(itemid) + '?key=' + api_key + ' | sed "s/,/\\n/g" | grep cost | sed "s/\\".\+\\"/ /g" | sed "s/ ://g" | sed "s/{//" | head -10'
+		priceresolve = 'curl -s https://api.torn.com/market/' + str(itemid) + '?selections=bazaar,itemmarket\&key=' + api_key + ' | sed "s/,/\\n/g" | grep cost | sed "s/\\".\+\\"/ /g" | sed "s/ ://g" | sed "s/{//" | head -20'
 		os.system(priceresolve)
 		exit(0)
 	itemid = itemid + 1
