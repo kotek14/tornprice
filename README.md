@@ -2,9 +2,9 @@
 Kotek's crutch for figuring out Torn City item market prices. Also works while travelling
 
 ### Hey!
-This tool allows you to just enter the item's name and receive ten lowest item market prices.
+This tool allows you to just enter the item's name and receive twenty lowest item market prices.
 
-Why ten? I dunno, because.
+Why twenty? I dunno, because.
 
 The main thing is that you don't need an ID, you only need the name.
 
@@ -13,6 +13,8 @@ I dunno.
 
 - Python
 - Curl
+- Sed
+- Sort
 
 ### Installation
 `git clone https://github.com/kotek14/tornprice.git`
