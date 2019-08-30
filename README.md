@@ -1,4 +1,4 @@
-# tornprice [LINUX]
+# tornprice
 Kotek's crutch for figuring out Torn City item market prices. Also works while travelling
 
 ### Hey!
@@ -12,15 +12,12 @@ The main thing is that you don't need an ID, you only need the name.
 I dunno.
 
 - Python
-- Curl
-- Sed
-- Sort
 
 ### Installation
 `git clone https://github.com/kotek14/tornprice.git`
 
 ### How to run
-First edit the script itself and insert your API key to wherever it says "INSERT YOUR KEY HERE". Simple as that.
+First edit the script itself and insert your API key to wherever it says "INSERT YOUR KEY HERE" (don't touch the quotes. I warned you). Simple as that.
 
 After that you can run it and it will work unless
 
@@ -30,7 +27,9 @@ B: My code sucks
 
 `python tornprice`
 
-### Why Linux only?
-Basically, the price resolver is an ugly bash script, so I cannot promise anything to Windows users.
+### What did I update
+Back in the day my price resolver was a really ugly bash script. Now it's all Python-based.
 
-Probably I will make it work properly one day.
+Additionally, I added the item cache (if it doesn't exist in the same directory as the program itself, it will be downloaded as `tornitems.kot`.
+
+Generally speaking, I rewrote the entire thing. Now it is not as disgusting to look at.

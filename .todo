@@ -1,5 +1,3 @@
-1. Allow passing the name as an argument (argv)
-2. Figure out how to join all arguments into one string (hey, StackOverflow, I bet you have a solution)
-3. Change user input To Be Just Like This Text (have no idea howm will look it up)
-4. Implement a local items cache (since I have their amount hardcoded anyway)
-5. Get rid of that huge line (you know which one I'm talking about, don't you?) and replace it with something elegant
+Implement a normal CLI
+Get rid of that "None" at the end
+Handle some of the typical errors

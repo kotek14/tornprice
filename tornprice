@@ -1,17 +1,54 @@
 #!/usr/bin/python
 import requests
-import os
+import os.path
+import sys
+from ast import literal_eval
 
-api_key = "INSERT YOUR API KEY HERE"
+api_key = "INSERT YOUR KEY HERE"
 
-r = requests.get("https://api.torn.com/torn/?selections=items&key=" + api_key)
-data = r.json()
-itemid = 1
-itemname = raw_input("Name? ")
+def sort_and_present(prices):
+	prices.sort()
+	i = 0
+	while prices[i] and i <= 20:
+		print(prices[i])
+		i += 1 
 
-while itemid <= 981:
-	if data["items"][str(itemid)]["name"] == itemname:
-		priceresolve = 'curl -s https://api.torn.com/market/' + str(itemid) + '?selections=bazaar,itemmarket\&key=' + api_key + ' | sed "s/,/\\n/g" | grep cost | sed "s/\\".\+\\"/ /g" | sed "s/ ://g" | sed "s/{//" | sort -n | head -20'
-		os.system(priceresolve)
-		exit(0)
-	itemid = itemid + 1
+def itemupdate():
+	r = requests.get("https://api.torn.com/torn/?selections=items&key=" + api_key)
+	cache = open("tornitems.kot", "w+")
+	cache.write(str(r.json()))
+	cache.close()
+	
+def itemload():
+	if os.path.exists("tornitems.kot"):
+		cache = open("tornitems.kot", "r")
+		data = literal_eval(cache.read())
+		cache.close()
+		return(data)
+	else:
+		itemupdate()
+		print("Item list updated.")
+		return(itemload())
+
+def getprices(item_id):
+	p = requests.get("https://api.torn.com/market/" + str(item_id) + "?selections=bazaar,itemmarket&key=" + api_key)
+	prices = p.json()
+	all_prices = []
+	for seller in prices['bazaar']:
+		all_prices.append(prices['bazaar'][seller]['cost'])
+	for seller in prices['itemmarket']:
+		all_prices.append(prices['itemmarket'][seller]['cost'])
+	sort_and_present(all_prices)
+	
+if len(sys.argv) >= 2:
+	prices = getprices(sys.argv[1])
+	print(prices)
+else:
+	data = itemload()
+	itemname = raw_input("Name? ")
+	itemid = 1
+	for itemid in data["items"]:
+		if data["items"][str(itemid)]["name"] == itemname:
+			prices = getprices(itemid)
+			print(prices)
+			exit(0)
