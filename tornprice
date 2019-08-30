@@ -4,7 +4,7 @@ import os.path
 import sys
 from ast import literal_eval
 
-api_key = "INSERT YOUR KEY HERE"
+api_key = "sVe7Annx1AzH4ELq"
 
 def sort_and_present(prices):
 	prices.sort()
@@ -46,9 +46,7 @@ if len(sys.argv) >= 2:
 else:
 	data = itemload()
 	itemname = raw_input("Name? ")
-	itemid = 1
 	for itemid in data["items"]:
 		if data["items"][str(itemid)]["name"] == itemname:
-			prices = getprices(itemid)
-			print(prices)
+			getprices(itemid)
 			exit(0)
