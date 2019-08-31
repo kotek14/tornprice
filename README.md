@@ -27,9 +27,26 @@ B: My code sucks
 
 `python tornprice`
 
-### What did I update
+### Updates
+
+#### Before Aug 31st
+
 Back in the day my price resolver was a really ugly bash script. Now it's all Python-based.
 
 Additionally, I added the item cache (if it doesn't exist in the same directory as the program itself, it will be downloaded as `tornitems.kot`.
 
 Generally speaking, I rewrote the entire thing. Now it is not as disgusting to look at.
+
+#### Version 1.4
+
+Normal command-line interface. Well, I call it "normal" because I used the "normal" tools to do it. It's still a crutch.
+
+I can't explain why, but trust me. It's important.
+
+To get a list of all command-line options, type in `-h` or `--help`, just like you do with every other command-line program. Don't know what I'm talking about? Too bad! I tried doing a GUI once and it still follows me in my nightmares.
+
+I added a function that goes through your inventory and counts up all of the plushies.
+
+Pretty useful for plushie-stackers like myself.
+
+Can be invoked by a parameter `--plushies`

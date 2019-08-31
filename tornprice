@@ -1,10 +1,24 @@
 #!/usr/bin/python
 import requests
+import argparse
 import os.path
 import sys
 from ast import literal_eval
 
 api_key = "INSERT YOUR KEY HERE"
+
+def my_plushies():
+	total = 0
+	print("Checking your inventory...")
+	inventory = requests.get("https://api.torn.com/user/?selections=inventory&key=" + api_key)
+	items = inventory.json()
+	for plushie in items['inventory']:
+		if "Plushie" in plushie['name']:
+			cost = getprices(plushie['ID'])
+			print("You have %d of %s. Each costs %d, %d in total" % (plushie['quantity'], plushie['name'], cost[0], cost[0] * plushie['quantity']))
+			total += cost[0] * plushie['quantity']
+	print("--------------------")
+	print("Total: " + str(total))
 
 def sort_and_present(prices):
 	prices.sort()
@@ -38,15 +52,35 @@ def getprices(item_id):
 		all_prices.append(prices['bazaar'][seller]['cost'])
 	for seller in prices['itemmarket']:
 		all_prices.append(prices['itemmarket'][seller]['cost'])
-	sort_and_present(all_prices)
+	return(all_prices)
 	
-if len(sys.argv) >= 2:
-	prices = getprices(sys.argv[1])
-	print(prices)
+
+def find_id(data, name):
+	for itemid in data["items"]:
+		if data["items"][str(itemid)]["name"] == name:
+			return(itemid)
+
+parser = argparse.ArgumentParser(description="TornPrice v1.4 by Kotek14")
+parser.add_argument("--id", help="ID of the item")
+parser.add_argument("--name", help="Name of the item")
+parser.add_argument("--update", action="store_true", help="Force update the item list")
+parser.add_argument("--plushies", action="store_true", help="Calculate the total price of your plushies")
+
+args = parser.parse_args()
+
+if args.update:
+	itemupdate()
+if args.plushies:
+	my_plushies()
+elif args.id:
+	prices = getprices(args.id)
+	sort_and_present(prices)
+elif args.name:
+	data = itemload()
+	prices_list = getprices(find_id(data, args.name))
+	sort_and_present(prices_list)
 else:
 	data = itemload()
-	itemname = raw_input("Name? ")
-	for itemid in data["items"]:
-		if data["items"][str(itemid)]["name"] == itemname:
-			getprices(itemid)
-			exit(0)
+	itemname = raw_input("Name of the item? ")
+	prices_list = getprices(find_id(data, itemname))
+	sort_and_present(prices_list)
