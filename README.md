@@ -29,13 +29,17 @@ B: My code sucks
 
 ### Updates
 
-#### Before Aug 31st
+#### Version 1.7
 
-Back in the day my price resolver was a really ugly bash script. Now it's all Python-based.
+Added `--flowers` function that calculates prices of all of your prices.
 
-Additionally, I added the item cache (if it doesn't exist in the same directory as the program itself, it will be downloaded as `tornitems.kot`.
+Added `--plushie-set` and `--flower-set` functions that check if you need items for complete item sets.
 
-Generally speaking, I rewrote the entire thing. Now it is not as disgusting to look at.
+Added `--points` function that returns prices for 10 points, flower set and a plushie set.
+
+Q: "Kotek, where are versions 1.5 and 1.6?"
+
+A: "They never existed. I pick a version whichever version number I feel like picking"
 
 #### Version 1.4
 
@@ -50,3 +54,11 @@ I added a function that goes through your inventory and counts up all of the plu
 Pretty useful for plushie-stackers like myself.
 
 Can be invoked by a parameter `--plushies`
+
+#### Before Aug 31st
+
+Back in the day my price resolver was a really ugly bash script. Now it's all Python-based.
+
+Additionally, I added the item cache (if it doesn't exist in the same directory as the program itself, it will be downloaded as `tornitems.kot`.
+
+Generally speaking, I rewrote the entire thing. Now it is not as disgusting to look at.

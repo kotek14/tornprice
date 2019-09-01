@@ -7,16 +7,63 @@ from ast import literal_eval
 
 api_key = "INSERT YOUR KEY HERE"
 
-def my_plushies():
+FLOWER_SET = ['African Violet', 'Banana Orchid', 'Cherry Blossom', 'Ceibo Flower', 'Crocus', 'Dahlia', 'Edelweiss', 'Heather', 'Orchid', 'Peony', 'Tribulus Omanense']
+PLUSHIE_SET = ['Camel Plushie', 'Chamois Plushie', 'Jaguar Plushie', 'Kitten Plushie', 'Lion Plushie', 'Monkey Plushie', 'Nessie Plushie', 'Panda Plushie', 'Red Fox Plushie', 'Sheep Plushie', 'Stingray Plushie', 'Teddy Bear Plushie', 'Wolverine Plushie']
+
+def points_comparison(data):
+	print("Please remember that this function makes 25 requests to Torn API. You only have 100 per minute. Use it wisely!")
+	print("Magic happens... Be patient...")
+	fset_price = 0
+	pset_price = 0
+	points_prices = []
+	pointsmarket = requests.get("https://api.torn.com/market/?selections=pointsmarket&key=" + api_key)
+	points = pointsmarket.json()
+	for lot in points['pointsmarket']:
+		points_prices.append(points['pointsmarket'][lot]['cost'])
+	points_prices.sort()
+	for flower in FLOWER_SET:
+		cost = getprices(find_id(data, flower))
+		fset_price += cost[0]
+	for plushie in PLUSHIE_SET:
+		cost = getprices(find_id(data, plushie))
+		pset_price += cost[0]
+	print("The current price of 10 points: " + str(points_prices[0] * 10))
+	print("The current price of a flower set: " + str(fset_price))
+	print("The current price of a plushie set: " + str(pset_price))
+	
+
+def item_sets(setname):
+	inventory = requests.get("https://api.torn.com/user/?selections=inventory&key=" + api_key)
+	items = inventory.json()
+	flower_set = FLOWER_SET
+	plushie_set = PLUSHIE_SET
+	print("Here is what you're missing from a " + setname + " set:")
+	if setname == "flower":
+		for flower in items['inventory']:
+			if flower['name'] in flower_set:
+				flower_set.remove(flower['name'])
+		for flower in flower_set:
+			print(flower + " is missing!")
+	elif setname == "plushie":
+		for plushie in items['inventory']:
+			if plushie['name'] in plushie_set:
+				plushie_set.remove(plushie['name'])
+		for plushie in plushie_set:
+			print(plushie + " is missing!")
+	else:
+		print("This wasn't supposed to happen. Sorry...")
+
+def my_items(setname):
 	total = 0
 	print("Checking your inventory...")
 	inventory = requests.get("https://api.torn.com/user/?selections=inventory&key=" + api_key)
 	items = inventory.json()
-	for plushie in items['inventory']:
-		if "Plushie" in plushie['name']:
-			cost = getprices(plushie['ID'])
-			print("You have %d of %s. Each costs %d, %d in total" % (plushie['quantity'], plushie['name'], cost[0], cost[0] * plushie['quantity']))
-			total += cost[0] * plushie['quantity']
+	for item in items['inventory']:
+		if item['type'] == setname:
+			cost = getprices(item['ID'])
+			cost.sort()
+			print("You have %d of %s. Each costs %d, %d in total" % (item['quantity'], item['name'], cost[0], cost[0] * item['quantity']))
+			total += cost[0] * item['quantity']
 	print("--------------------")
 	print("Total: " + str(total))
 
@@ -60,18 +107,30 @@ def find_id(data, name):
 		if data["items"][str(itemid)]["name"] == name:
 			return(itemid)
 
-parser = argparse.ArgumentParser(description="TornPrice v1.4 by Kotek14")
+parser = argparse.ArgumentParser(description="TornPrice v1.7 by Kotek14")
+parser.add_argument("--update", action="store_true", help="Force update the item list")
 parser.add_argument("--id", help="ID of the item")
 parser.add_argument("--name", help="Name of the item")
-parser.add_argument("--update", action="store_true", help="Force update the item list")
 parser.add_argument("--plushies", action="store_true", help="Calculate the total price of your plushies")
+parser.add_argument("--flowers", action="store_true", help="Calculate the total price of your flowers")
+parser.add_argument("--plushie-set", action="store_true", help="Check what is missing from your plushie set")
+parser.add_argument("--flower-set", action="store_true", help="Check what is missing from your flower set")
+parser.add_argument("--points", action="store_true", help="Check if it makes sense to exchange sets to points")
 
 args = parser.parse_args()
 
 if args.update:
 	itemupdate()
 if args.plushies:
-	my_plushies()
+	my_items("Plushie")
+elif args.flowers:
+	my_items("Flower")
+elif args.flower_set:
+	item_sets("flower")
+elif args.plushie_set:
+	item_sets("plushie")
+elif args.points:
+	points_comparison(itemload())
 elif args.id:
 	prices = getprices(args.id)
 	sort_and_present(prices)
