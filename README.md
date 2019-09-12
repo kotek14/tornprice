@@ -49,7 +49,7 @@ Added `--points` function that returns prices for 10 points, flower set and a pl
 
 Q: "Kotek, where are versions 1.5 and 1.6?"
 
-A: "They never existed. I pick a version whichever version number I feel like picking"
+A: "They never existed. I pick whichever version number I feel like picking"
 
 #### Version 1.4
 
