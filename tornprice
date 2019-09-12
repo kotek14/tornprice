@@ -1,14 +1,42 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 import requests
 import argparse
 import os.path
-import sys
 from ast import literal_eval
 
 api_key = "INSERT YOUR KEY HERE"
+#api_key = os.environ['TORN']
 
 FLOWER_SET = ['African Violet', 'Banana Orchid', 'Cherry Blossom', 'Ceibo Flower', 'Crocus', 'Dahlia', 'Edelweiss', 'Heather', 'Orchid', 'Peony', 'Tribulus Omanense']
 PLUSHIE_SET = ['Camel Plushie', 'Chamois Plushie', 'Jaguar Plushie', 'Kitten Plushie', 'Lion Plushie', 'Monkey Plushie', 'Nessie Plushie', 'Panda Plushie', 'Red Fox Plushie', 'Sheep Plushie', 'Stingray Plushie', 'Teddy Bear Plushie', 'Wolverine Plushie']
+
+def throw_an_error(code):
+	if code == 1:
+		print("Error 1: Are you online?")
+	elif code == 20:
+		print("Error 20: Item ID has to be an integer")
+	elif code == 21:
+		print("Error 21: Item name has to be a string")
+	elif code == 100:
+		print("Error 100: Item doesn't exist or there are no offers on the item market")
+	exit(code)
+
+def number_output(number):
+	return('{:,}'.format(number))
+
+def market_api_call(item):
+	try:
+		p = requests.get("https://api.torn.com/market/" + str(item) + "?selections=bazaar,itemmarket&key=" + api_key)
+		prices = p.json()
+		if prices['bazaar'] is None and prices['itemmarket'] is None:
+			throw_an_error(100)
+		elif prices['bazaar'] is None:
+			del prices['bazaar']
+		elif prices['itemmarket'] is None:
+			del prices['itemmarket']
+		return(prices)
+	except requests.exceptions.ConnectionError:
+		throw_an_error(1)
 
 def points_comparison(data):
 	print("Please remember that this function makes 25 requests to Torn API. You only have 100 per minute. Use it wisely!")
@@ -27,9 +55,9 @@ def points_comparison(data):
 	for plushie in PLUSHIE_SET:
 		cost = getprices(find_id(data, plushie))
 		pset_price += cost[0]
-	print("The current price of 10 points: " + str(points_prices[0] * 10))
-	print("The current price of a flower set: " + str(fset_price))
-	print("The current price of a plushie set: " + str(pset_price))
+	print("The current price of 10 points: " + str(number_output(points_prices[0] * 10)))
+	print("The current price of a flower set: " + str(number_output(fset_price)))
+	print("The current price of a plushie set: " + str(number_output(pset_price)))
 	
 
 def item_sets(setname):
@@ -62,17 +90,18 @@ def my_items(setname):
 		if item['type'] == setname:
 			cost = getprices(item['ID'])
 			cost.sort()
-			print("You have %d of %s. Each costs %d, %d in total" % (item['quantity'], item['name'], cost[0], cost[0] * item['quantity']))
+			print("You have %s of %s. Each costs %s, %s in total" % (number_output(item['quantity']), item['name'], number_output(cost[0]), number_output(cost[0] * item['quantity'])))
 			total += cost[0] * item['quantity']
 	print("--------------------")
-	print("Total: " + str(total))
+	print("Total: " + str(number_output(total)))
 
 def sort_and_present(prices):
 	prices.sort()
 	i = 0
-	while prices[i] and i <= 20:
-		print(prices[i])
-		i += 1 
+	while i < len(prices) and i <= 20:
+		print(number_output(prices[i]))
+		i += 1
+	exit(0)
 
 def itemupdate():
 	r = requests.get("https://api.torn.com/torn/?selections=items&key=" + api_key)
@@ -92,22 +121,19 @@ def itemload():
 		return(itemload())
 
 def getprices(item_id):
-	p = requests.get("https://api.torn.com/market/" + str(item_id) + "?selections=bazaar,itemmarket&key=" + api_key)
-	prices = p.json()
+	prices = market_api_call(item_id)
 	all_prices = []
-	for seller in prices['bazaar']:
-		all_prices.append(prices['bazaar'][seller]['cost'])
-	for seller in prices['itemmarket']:
-		all_prices.append(prices['itemmarket'][seller]['cost'])
+	for source in prices:
+		for seller in prices[source]:
+			all_prices.append(prices[source][seller]['cost'])
 	return(all_prices)
-	
 
 def find_id(data, name):
 	for itemid in data["items"]:
 		if data["items"][str(itemid)]["name"] == name:
 			return(itemid)
 
-parser = argparse.ArgumentParser(description="TornPrice v1.7 by Kotek14")
+parser = argparse.ArgumentParser(description="TornPrice v1.8 by Kotek14")
 parser.add_argument("--update", action="store_true", help="Force update the item list")
 parser.add_argument("--id", help="ID of the item")
 parser.add_argument("--name", help="Name of the item")
@@ -132,14 +158,22 @@ elif args.plushie_set:
 elif args.points:
 	points_comparison(itemload())
 elif args.id:
+	try:
+		int(args.id)
+	except:
+		throw_an_error(20)
 	prices = getprices(args.id)
 	sort_and_present(prices)
 elif args.name:
-	data = itemload()
-	prices_list = getprices(find_id(data, args.name))
-	sort_and_present(prices_list)
+	try:
+		int(args.name)
+	except:
+		data = itemload()
+		prices_list = getprices(find_id(data, args.name))
+		sort_and_present(prices_list)
+	throw_an_error(21)
 else:
 	data = itemload()
-	itemname = raw_input("Name of the item? ")
+	itemname = input("Name of the item? ")
 	prices_list = getprices(find_id(data, itemname))
 	sort_and_present(prices_list)

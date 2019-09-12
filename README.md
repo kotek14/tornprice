@@ -11,7 +11,7 @@ The main thing is that you don't need an ID, you only need the name.
 ### Dependencies
 I dunno.
 
-- Python
+- Python 3
 
 ### Installation
 `git clone https://github.com/kotek14/tornprice.git`
@@ -25,9 +25,19 @@ A: Your key is wrong
 
 B: My code sucks
 
-`python tornprice`
+`python3 tornprice`
 
 ### Updates
+
+#### Version 1.8
+
+Moved the script to Python 3
+
+Added commas to number output
+
+Implemented some error handling
+
+Fixed some stuff
 
 #### Version 1.7
 
