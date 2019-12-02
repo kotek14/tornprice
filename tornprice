@@ -125,7 +125,7 @@ def getprices(item_id):
 	all_prices = []
 	for source in prices:
 		for seller in prices[source]:
-			all_prices.append(prices[source][seller]['cost'])
+			all_prices.append(seller['cost'])
 	return(all_prices)
 
 def find_id(data, name):
