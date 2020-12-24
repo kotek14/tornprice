@@ -1,11 +1,12 @@
 #!/usr/bin/python3
 import requests
 import argparse
-import os.path
+import os
+import sys
 from ast import literal_eval
 
-api_key = "INSERT YOUR KEY HERE"
-#api_key = os.environ['TORN']
+#api_key = "INSERT YOUR KEY HERE"
+api_key = os.environ['TORN']
 
 FLOWER_SET = ['African Violet', 'Banana Orchid', 'Cherry Blossom', 'Ceibo Flower', 'Crocus', 'Dahlia', 'Edelweiss', 'Heather', 'Orchid', 'Peony', 'Tribulus Omanense']
 PLUSHIE_SET = ['Camel Plushie', 'Chamois Plushie', 'Jaguar Plushie', 'Kitten Plushie', 'Lion Plushie', 'Monkey Plushie', 'Nessie Plushie', 'Panda Plushie', 'Red Fox Plushie', 'Sheep Plushie', 'Stingray Plushie', 'Teddy Bear Plushie', 'Wolverine Plushie']
@@ -105,13 +106,13 @@ def sort_and_present(prices):
 
 def itemupdate():
 	r = requests.get("https://api.torn.com/torn/?selections=items&key=" + api_key)
-	cache = open("tornitems.kot", "w+")
+	cache = open(sys.path[0] + "/tornitems.kot", "w+")
 	cache.write(str(r.json()))
 	cache.close()
 	
 def itemload():
-	if os.path.exists("tornitems.kot"):
-		cache = open("tornitems.kot", "r")
+	if os.path.exists(sys.path[0] + "/tornitems.kot"):
+		cache = open(sys.path[0] + "/tornitems.kot", "r")
 		data = literal_eval(cache.read())
 		cache.close()
 		return(data)
